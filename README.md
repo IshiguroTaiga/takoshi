@@ -113,11 +113,11 @@ ngrok http 5000
 Copy the Forwarding URL provided (e.g. https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby)
 
 ### 📱 How to Connect Devices
--Device	Role	URL to Visit
--Main Laptop	Admin Monitor	http://localhost:5000/ishi
--Secondary Laptop	Player 1	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby
--Smartphone	Player 2	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby
--Note: When opening the Ngrok link on a phone for the first time, you may see a "Warning" page. Click "Visit Site" to proceed to the game.
+-**Device**	Role	URL to Visit
+-**Main Laptop**	Admin Monitor	http://localhost:5000/ishi
+-**Secondary Laptop**	Player 1	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby
+-**Smartphone	Player** 2	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby
+-**Note:** When opening the Ngrok link on a phone for the first time, you may see a "Warning" page. Click "Visit Site" to proceed to the game.
 
 #DETAILED STEP BY STEP
 1. Locate tictactoe-server folder
