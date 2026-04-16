@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTT Distributed</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="p-4 bg-slate-800 flex justify-between shadow-lg border-b border-slate-700">
+        <h1 class="font-bold text-xl tracking-tight">🎮 TTT Distributed</h1>
+        <div>
+            {% if current_user.is_authenticated %}
+                <a href="/game/lobby" class="px-3 hover:text-blue-400 transition">Lobby</a>
+                {% if current_user.is_admin %}
+                    <a href="/ishi" class="text-orange-400 px-3 hover:text-orange-300 transition font-semibold">Admin Panel</a>
+                {% endif %}
+                <a href="{{ url_for('auth.logout') }}" class="px-3 text-red-400 hover:text-red-300 transition">Logout</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-8 flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50"></div>
+
+    <!-- Core Distributed Logic Script -->
+    <script>
+        const socket = io();
+
+        function showToast(message, color = "bg-blue-600") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            // Using Tailwind for a smooth pop-up animation
+            toast.className = `${color} text-white px-6 py-4 rounded-lg shadow-2xl transition-all duration-500 transform translate-y-0 flex items-center gap-2 font-medium`;
+            toast.innerHTML = `<span>${message}</span>`;
+            
+            container.appendChild(toast);
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // Global listeners for distributed events
+        socket.on('match_found', (data) => {
+            showToast("🎮 Match Found! Joining game...", "bg-green-600");
+            setTimeout(() => {
+                window.location.href = "/game/game/" + data.game_id;
+            }, 1200);
+        });
+
+        socket.on('waiting', (data) => {
+            showToast(data.msg, "bg-indigo-600");
+        });
+
+        socket.on('error', (data) => {
+            showToast(data.msg, "bg-red-600");
+        });
+    </script>
+</body>
+</html>

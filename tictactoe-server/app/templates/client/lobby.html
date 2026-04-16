@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center">
+    <h2 class="text-4xl mb-8">Welcome, {{ current_user.username }}</h2>
+    <div class="space-x-4">
+        <button onclick="joinQueue(true)" class="bg-purple-600 px-8 py-4 rounded-lg text-xl font-bold hover:bg-purple-500">Play vs AI</button>
+        <button onclick="joinQueue(false)" class="bg-blue-600 px-8 py-4 rounded-lg text-xl font-bold hover:bg-blue-500">Find Online Player</button>
+    </div>
+    <div id="status-msg" class="mt-8 text-xl text-yellow-400"></div>
+</div>
+<script>
+    function joinQueue(vsAi) {
+        document.getElementById('status-msg').innerText = "Joining queue...";
+        socket.emit('join_queue', { vs_ai: vsAi });
+    }
+</script>
+{% endblock %}

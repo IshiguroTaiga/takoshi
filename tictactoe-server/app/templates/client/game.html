@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto text-center">
+    <h2 class="text-2xl mb-4 font-bold text-blue-400">Game #{{ game.id }}</h2>
+    <div id="status" class="mb-4 text-yellow-400 font-semibold text-xl italic">Waiting for move...</div>
+    
+    <!-- The Board -->
+    <div class="grid grid-cols-3 gap-2 bg-slate-800 p-2 rounded-lg shadow-2xl">
+        {% for i in range(9) %}
+        <div onclick="move({{i}})" id="c{{i}}" class="h-24 bg-slate-700 flex items-center justify-center text-5xl font-bold cursor-pointer hover:bg-slate-600 transition-colors rounded"></div>
+        {% endfor %}
+    </div>
+
+    <!-- Actions Area -->
+    <div id="actions" class="mt-8 hidden">
+        <button id="rematch-btn" onclick="requestRematch()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition-transform transform hover:scale-105">
+            Play Again
+        </button>
+    </div>
+
+    <!-- Rematch Request Modal -->
+    <div id="rematch-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50">
+        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl border border-blue-500 text-center">
+            <p class="text-xl mb-6">Opponent wants a rematch!</p>
+            <div class="flex gap-4 justify-center">
+                <button onclick="acceptRematch()" class="bg-green-600 px-6 py-2 rounded font-bold">Accept</button>
+                <button onclick="window.location.href='/game/lobby'" class="bg-red-600 px-6 py-2 rounded font-bold">Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+    const game_id = {{ game.id }};
+    const isAiGame = {{ 'true' if game.vs_ai else 'false' }};
+
+    socket.emit('join_game', {game_id: game_id});
+
+    function move(i) { 
+        socket.emit('make_move', {game_id, index: i}); 
+    }
+
+    function requestRematch() {
+        if(isAiGame) {
+            socket.emit('instant_restart', {game_id});
+        } else {
+            document.getElementById('rematch-btn').innerText = "Waiting for Opponent...";
+            document.getElementById('rematch-btn').disabled = true;
+            socket.emit('request_rematch', {game_id});
+        }
+    }
+
+    function acceptRematch() {
+        socket.emit('accept_rematch', {game_id});
+        document.getElementById('rematch-modal').classList.add('hidden');
+    }
+
+    socket.on('update', (data) => {
+        // Update Board
+        data.board.split('').forEach((char, i) => {
+            const cell = document.getElementById('c'+i);
+            cell.innerText = char === ' ' ? '' : char;
+            cell.className = `h-24 bg-slate-700 flex items-center justify-center text-5xl font-bold cursor-pointer hover:bg-slate-600 transition-colors rounded ${char === 'X' ? 'text-blue-400' : 'text-red-400'}`;
+        });
+
+        // Update UI based on status
+        const statusEl = document.getElementById('status');
+        const actionsEl = document.getElementById('actions');
+
+        if(data.status === 'finished') {
+            statusEl.innerText = "Game Over!";
+            actionsEl.classList.remove('hidden');
+        } else if(data.status === 'active') {
+            actionsEl.classList.add('hidden');
+            document.getElementById('rematch-btn').innerText = "Play Again";
+            document.getElementById('rematch-btn').disabled = false;
+            statusEl.innerText = "Game In Progress...";
+        }
+    });
+
+    socket.on('rematch_offered', () => {
+        document.getElementById('rematch-modal').classList.remove('hidden');
+    });
+</script>
+{% endblock %}

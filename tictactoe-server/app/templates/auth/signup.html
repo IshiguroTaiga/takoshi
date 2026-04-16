@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto bg-slate-800 p-8 rounded shadow">
+    <h2 class="text-2xl mb-4">Create Account</h2>
+    <form method="POST">
+        <input name="username" placeholder="Username" class="w-full p-2 mb-4 bg-slate-700 rounded border border-slate-600 text-white" required>
+        <input name="password" type="password" placeholder="Password" class="w-full p-2 mb-4 bg-slate-700 rounded border border-slate-600 text-white" required>
+        <button class="w-full bg-green-600 p-2 rounded hover:bg-green-500 font-bold">Sign Up</button>
+    </form>
+    <p class="mt-4 text-gray-400 text-sm">Already have an account? <a href="/login" class="text-blue-400 hover:underline">Login here</a></p>
+</div>
+{% endblock %}
