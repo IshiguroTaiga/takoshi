@@ -44,7 +44,7 @@ A real-time, multi-user distributed gaming system built with **Python (Flask)** 
 ## 📋 Installation & Setup
 
 ### 1. Clone the environment
-```bash
+
 # Navigate to project folder
 cd tictactoe-server
 
