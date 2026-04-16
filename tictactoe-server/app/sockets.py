@@ -28,12 +28,16 @@ def on_join_game(data):
 
 @socketio.on('join_queue')
 def join_queue(data):
+    # Clear old entries for this user
+    QueueEntry.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+
     vs_ai = data.get('vs_ai', False)
     if vs_ai:
         game = Game(player1_id=current_user.id, vs_ai=True)
         db.session.add(game)
         db.session.commit()
-        log_event(game.id, f"Player {current_user.username} started an AI Game.")
+        log_event(game.id, f"AI Game started by {current_user.username}")
         emit('match_found', {'game_id': game.id})
     else:
         waiter = QueueEntry.query.filter_by(vs_ai=False).filter(QueueEntry.user_id != current_user.id).first()
@@ -42,14 +46,16 @@ def join_queue(data):
             db.session.add(game)
             db.session.delete(waiter)
             db.session.commit()
-            log_event(game.id, f"Match Found: {game.p1.username} vs {game.p2.username}")
-            # Notify everyone so the specific users catch it
+            
+            # Now game.p1 and game.p2 will work because of Step 1
+            msg = f"Match Found: {game.p1.username} vs {game.p2.username}"
+            log_event(game.id, msg)
             emit('match_found', {'game_id': game.id}, broadcast=True)
         else:
-            if not QueueEntry.query.filter_by(user_id=current_user.id).first():
-                db.session.add(QueueEntry(user_id=current_user.id))
-                db.session.commit()
-            emit('waiting', {'msg': 'Searching for an opponent...'})
+            new_entry = QueueEntry(user_id=current_user.id, vs_ai=False)
+            db.session.add(new_entry)
+            db.session.commit()
+            emit('waiting', {'msg': 'Searching for player...'})
 
 @socketio.on('make_move')
 def make_move(data):

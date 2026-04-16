@@ -1,17 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="space-y-6">
+    <!-- Header with Reset Button -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 class="text-3xl font-bold text-orange-400">Admin Live Monitor</h2>
+        <button onclick="clearAllData()" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition-transform transform hover:scale-105">
+            🗑️ Clear History & Reset IDs
+        </button>
+    </div>
+
     <!-- Stats Header -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-blue-500">
+        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-blue-500 shadow-md">
             <p class="text-gray-400 text-sm">Total Users</p>
             <p class="text-2xl font-bold">{{ users|length }}</p>
         </div>
-        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-green-500">
+        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-green-500 shadow-md">
             <p class="text-gray-400 text-sm">Total Games</p>
             <p class="text-2xl font-bold" id="stat-total-games">{{ games|length }}</p>
         </div>
-        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-orange-500">
+        <div class="bg-slate-800 p-4 rounded-lg border-l-4 border-orange-500 shadow-md">
             <p class="text-gray-400 text-sm">Active Now</p>
             <p class="text-2xl font-bold" id="stat-active-games">
                 {{ games|selectattr("status", "equalto", "active")|list|length }}
@@ -46,7 +54,12 @@
                                     {{ game.status }}
                                 </span>
                             </td>
-                            <td class="py-3">
+                            <td class="py-3 flex items-center gap-4">
+                                <!-- WATCH BUTTON -->
+                                <a href="/ishi/monitor/{{ game.id }}" class="text-blue-400 hover:text-blue-300 font-semibold text-sm flex items-center gap-1">
+                                    👁️ Watch
+                                </a>
+
                                 {% if game.status == 'active' %}
                                 <button onclick="terminateGame({{ game.id }})" class="text-red-500 hover:text-red-400 text-sm">Terminate</button>
                                 {% endif %}
@@ -71,11 +84,9 @@
 <script>
     // 1. Listen for move updates from server
     socket.on('update', (data) => {
-        // Update the board string in the table
         const boardEl = document.getElementById('board-' + data.game_id);
         if (boardEl) boardEl.innerText = data.board;
         
-        // Update status if game finished
         if (data.status !== 'active') {
             const statusEl = document.getElementById('status-' + data.game_id);
             if (statusEl) {
@@ -101,6 +112,21 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) showToast("Game Terminated", "bg-red-600");
+            });
+        }
+    }
+
+    // 4. Admin Function: Clear Database
+    function clearAllData() {
+        if(confirm("🛑 DANGER: This will delete ALL game history and reset game IDs to #1. Users will remain. Continue?")) {
+            fetch('/ishi/clear_history', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    window.location.reload();
+                } else {
+                    alert("Error resetting database: " + data.error);
+                }
             });
         }
     }

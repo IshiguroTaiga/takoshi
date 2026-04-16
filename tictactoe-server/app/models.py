@@ -18,7 +18,9 @@ class Game(db.Model):
     status = db.Column(db.String(20), default="active") # active, finished, terminated
     winner_id = db.Column(db.Integer, nullable=True) # 0 for draw, -1 for AI
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    # ADD THESE TWO LINES - This creates the "link" to the User table
+    p1 = db.relationship('User', foreign_keys=[player1_id])
+    p2 = db.relationship('User', foreign_keys=[player2_id])
 class QueueEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
