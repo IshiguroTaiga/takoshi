@@ -119,7 +119,7 @@ Copy the Forwarding URL provided (e.g. https://<YOUR_NGROK_ID>.ngrok-free.app/ga
 4. -**Smartphone	Player** 2	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby.
 5. -**Note:** When opening the Ngrok link on a phone for the first time, you may see a "Warning" page. Click "Visit Site" to proceed to the game.
 
-#DETAILED STEP BY STEP
+### DETAILED STEP BY STEP
 1. Locate tictactoe-server folder
 2. Open terminal there
 3. run .\venv\Scripts\activate
