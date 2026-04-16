@@ -51,33 +51,33 @@ cd tictactoe-server
 # Activate virtual environment
 .\venv\Scripts\activate
 
-2. Install Dependencies
+### 2. Install Dependencies
 
 pip install flask flask-socketio flask-sqlalchemy flask-login flask-bcrypt eventlet
 
-3. Initialize Database & Admin
+### 3. Initialize Database & Admin
 
-This script creates the SQLite database and a default admin account.
+# This script creates the SQLite database and a default admin account.
 
 python seed.py
 
 Default Admin: admin
 Default Password: ishi123
 
-4. Run the Server
+### 4. Run the Server
 
 python run.py
 
-The server will start at http://localhost:5000.
+# The server will start at http://localhost:5000.
 
-🌐 How to Connect Other Devices
+### 🌐 How to Connect Other Devices
 To demonstrate the Distributed nature, follow these steps to connect a second device (Phone/Laptop):
 Find your Local IP: Open a terminal and type ipconfig. Note the IPv4 Address (e.g., 192.168.1.15).
 Open Firewall: Ensure your Windows Firewall allows python.exe through.
 Access URL: On the second device, enter:
 http://<YOUR_IP_ADDRESS>:5000/game/lobby
 
-🎮 Usage Guide
+### 🎮 Usage Guide
 Admin: Access http://localhost:5000/ishi to monitor the network.
 Player: Access http://localhost:5000/game/lobby to join the game.
 Matchmaking: Click "Find Online Player" on two different devices to be paired.
@@ -88,3 +88,33 @@ Use a tool like **Ngrok** (which you already installed) to generate a public lin
 2. In a second terminal, run `ngrok http 5000`.
 3. Give the `https://...` link to your teacher. 
 4. They can join the game from their own computer anywhere, which looks **extremely impressive** for a Distributed Systems project!
+
+### Ngrok GUIDE
+get ur auth here: https://dashboard.ngrok.com/get-started/your-authtoken
+
+### 🌐 Remote Testing Guide (Ngrok Tunneling)
+To demonstrate this as a true distributed system, follow these steps to connect multiple devices (Phone, Laptop, Tablet) from any network using Ngrok.
+### 1. Start the Flask Server (Terminal A)
+
+This terminal acts as the Host. It manages the database and the game logic.
+Open your terminal in the project folder.
+Activate your virtual environment: .\venv\Scripts\activate
+Run the server: python run.py
+Status: You should see wsgi starting up on http://0.0.0.0:5000
+
+### 2. Start the Ngrok Tunnel (Terminal B)
+This terminal creates a secure "bridge" from the internet to your laptop.
+Open a second terminal window.
+Ensure you have added your authtoken (only needed once):
+ngrok config add-authtoken <YOUR_TOKEN>
+Start the tunnel:
+ngrok http 5000
+
+Copy the Forwarding URL provided (e.g. https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby)
+
+### 📱 How to Connect Devices
+Device	Role	URL to Visit
+Main Laptop	Admin Monitor	http://localhost:5000/ishi
+Secondary Laptop	Player 1	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby
+Smartphone	Player 2	https://<YOUR_NGROK_ID>.ngrok-free.app/game/lobby
+Note: When opening the Ngrok link on a phone for the first time, you may see a "Warning" page. Click "Visit Site" to proceed to the game.
